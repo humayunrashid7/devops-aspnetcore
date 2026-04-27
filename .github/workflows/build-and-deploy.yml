@@ -7,7 +7,7 @@ on:
       - develop
 
 env:
-  AZURE_CONTAINER_APP_NAME: ${{ secrets.AZURE_CONTAINER_APP_NAME }}
+  AZURE_CONTAINER_APP_NAME: devopsapi-app
   AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
   ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
   ACR_REPOSITORY: devopsapi
@@ -24,7 +24,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Log in to Azure
+      - name: Azure Login
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
@@ -62,6 +62,8 @@ jobs:
       - name: Deploy to Azure Container App
         uses: azure/container-apps-deploy-action@v2
         with:
-          containerAppName: ${{ env.AZURE_CONTAINER_APP_NAME }}
-          resourceGroup: ${{ env.AZURE_RESOURCE_GROUP }}
           imageToDeploy: ${{ env.ACR_LOGIN_SERVER }}/${{ env.ACR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+          resourceGroup: ${{ env.AZURE_RESOURCE_GROUP }}
+          containerAppName: ${{ env.AZURE_CONTAINER_APP_NAME }}
+          environmentVariables: |
+            ASPNETCORE_ENVIRONMENT=Development
